@@ -85,11 +85,14 @@ class Spotify:
     @property
     def status(self):
         status = self._client.currently_playing()
-        if status:
-            song = status["item"]
-        else:  # get last played track
+        playing_type = status.get('currently_playing_type', None)
+        if playing_type in {'episode', 'track'}:
+            a = self._client.currently_playing()
             status = self._client.recently_played_tracks(limit=1)["items"][0]
             song = status["track"]
+        else:
+            song = status["item"]
+
         if not status:
             return None
 
